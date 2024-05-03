@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func CreateMessage(timestamp uint64, from, to, message string) error {
+func CreateMessage(timestamp int64, from, to, message string) error {
 	db, err := settings.GetDatabaseConnect()
 	if err != nil {
 		panic(err)

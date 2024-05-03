@@ -23,7 +23,7 @@ func GetMessages(from, to string) ([]*pb.ChatMessage, error) {
 
 	var messages []*pb.ChatMessage
 	for rows.Next() {
-		var timestamp uint64
+		var timestamp int64
 		var fromLogin, toLogin, message string
 		err = rows.Scan(&timestamp, &fromLogin, &toLogin, &message)
 		if err != nil {

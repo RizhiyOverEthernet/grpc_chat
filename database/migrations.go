@@ -2,6 +2,7 @@ package database
 
 import (
 	"chat/settings"
+	"fmt"
 	_ "github.com/lib/pq"
 	"log"
 )
@@ -34,6 +35,7 @@ func Migration() {
 `)
 
 	if err != nil {
+		fmt.Println(err)
 		log.Fatalf("Не удалось создать таблицы в базе данных %s\n", settings.PsqlDatabase)
 	}
 }
