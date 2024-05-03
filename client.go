@@ -15,10 +15,7 @@ import (
 )
 
 var (
-	address  = fmt.Sprintf("%s:%s", settings.ChatHost, settings.ChatPort)
-	command  string
-	login    string
-	password string
+	address = fmt.Sprintf("%s:%s", settings.ChatHost, settings.ChatPort)
 )
 
 func main() {
@@ -31,8 +28,7 @@ func main() {
 	fmt.Println("Приложение чата по gRPC")
 	client := pb.NewChatClient(conn)
 
-	//auth(client)
-	login = "rizhiy"
+	login := auth(client)
 	fmt.Printf("Добро пожаловать, %s! Вот список доступных команд:\n", login)
 	fmt.Println("/open USERNAME - открыть диалог с пользователем")
 	fmt.Println("/send USERNAME MESSAGE - отправить сообщение пользователю")
@@ -64,7 +60,12 @@ func main() {
 }
 
 // auth позволяет провести аутентификацию пользователя
-func auth(c pb.ChatClient) {
+func auth(c pb.ChatClient) string {
+	var (
+		login    string
+		password string
+	)
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*5)
 	defer cancel()
 
@@ -75,25 +76,25 @@ func auth(c pb.ChatClient) {
 		_, err := fmt.Scanln(&login)
 		if err != nil {
 			fmt.Println("Ошибка чтения ввода:", err)
-			return
+			os.Exit(1)
 		}
 
 		fmt.Print("Введите пароль: ")
 		_, err = fmt.Scanln(&password)
 		if err != nil {
 			fmt.Println("Ошибка чтения ввода:", err)
-			return
+			os.Exit(1)
 		}
 
 		isAuth, err := c.AuthUser(ctx, &pb.ChatAuth{Login: login, Password: password})
 		if err != nil {
 			fmt.Println("Ошибка при вызове AuthUser:", err)
-			return
+			os.Exit(1)
 		}
 
 		if !isAuth.Errors {
 			fmt.Printf("Аутентификация пройдена\n\n")
-			break
+			return login
 		} else {
 			fmt.Printf("Аутентификация не пройдена\n\n")
 			continue
@@ -111,7 +112,9 @@ func get(c pb.ChatClient, user, interlocutor string) {
 	}
 
 	for _, msg := range messages.Message {
-		fmt.Printf("От %s в %d: %s\n", msg.From, msg.Timestamp, msg.Message)
+		timestamp := time.Unix(msg.Timestamp, 0)
+		currTime := timestamp.Format("2006-01-02 15:04:05")
+		fmt.Printf("От %s в %s: %s\n", msg.From, currTime, msg.Message)
 	}
 }
 

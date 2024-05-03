@@ -14,7 +14,7 @@ func GetMessages(from, to string) ([]*pb.ChatMessage, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT timestamp, from_login, to_login, message FROM messages WHERE from_login = $1 AND to_login = $2 ORDER BY timestamp DESC", from, to)
+	rows, err := db.Query("SELECT timestamp, from_login, to_login, message FROM messages WHERE (from_login = $1 AND to_login = $2) OR (from_login = $2 AND to_login = $1) ORDER BY timestamp", from, to)
 	if err != nil {
 		log.Printf("Не удалось получить сообщения от %s для %s", from, to)
 		return nil, err
