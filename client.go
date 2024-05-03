@@ -69,7 +69,7 @@ func auth(c pb.ChatClient) string {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*5)
 	defer cancel()
 
-	fmt.Println("Необходимо пройти аутентификацию")
+	fmt.Printf("Необходимо пройти аутентификацию\n\n")
 
 	for {
 		fmt.Print("Введите логин: ")
